@@ -41,4 +41,12 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public static function booted()
+    {
+        static::created(function ($user) {
+            $userTenant = Tenant::create(['id' => $user->domain]);
+            $userTenant->domains()->create(['domain' => $user->domain . '.' . env('APP_CENTERAL_DOMAIN', 'localhost')]);
+        });
+    }
 }
